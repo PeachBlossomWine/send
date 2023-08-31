@@ -2,6 +2,8 @@ _addon.version = '1.1'
 _addon.name = 'Send'
 _addon.command = 'send'
 _addon.author = 'Byrth - Modded by BPW'
+require('tables')
+require('logger')
 
 windower.register_event('addon command',function (...)
     local term = table.concat({...}, ' ')
@@ -23,29 +25,28 @@ windower.register_event('addon command',function (...)
         if broken_init ~= nil then
             relevant_msg(table.concat(broken_init,' '))
         end
-        windower.send_ipc_message('send ' .. term)
+		windower.send_ipc_message('send ' .. player.name ..' '.. term)
 	elseif qual:lower()=='@party' then
 		if broken_init ~= nil then
 			relevant_msg(table.concat(broken_init,' '))
 		end
-		windower.send_ipc_message('send ' .. term ..' '..player.name)
+		windower.send_ipc_message('send ' .. player.name ..' '.. term)
     else
-        windower.send_ipc_message('send ' .. term)
+		windower.send_ipc_message('send ' .. player.name ..' '.. term)
     end
 end)
 
 windower.register_event('ipc message',function (msg)
     local broken = split(msg, ' ')
-
     local command = table.remove(broken, 1)
     if command ~= 'send' then
         return
     end
 
-    if #broken < 2 then return end
+    if #broken < 3 then return end
     
+	local the_sender = table.remove(broken,1)
     local qual = table.remove(broken,1)
-	local the_sender = table.remove(broken,3)
     local player = windower.ffxi.get_player()
     if player and qual:lower()==player.name:lower() then
         relevant_msg(table.concat(broken,' '))
